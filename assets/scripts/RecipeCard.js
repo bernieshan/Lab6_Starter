@@ -3,6 +3,8 @@ class RecipeCard extends HTMLElement {
     // Part 1 Expose - TODO
 
     // You'll want to attach the shadow DOM here
+    super();
+    this.attachShadow({mode: 'open'});
   }
 
   set data(data) {
@@ -88,6 +90,55 @@ class RecipeCard extends HTMLElement {
     // Here's the root element that you'll want to attach all of your other elements to
     const card = document.createElement('article');
 
+    this.shadowRoot.append(styleElem, card);
+    this.shadowRoot.appendChild(card);
+
+    var image = document.createElement('img');
+    image.setAttribute("src", searchForKey(data, "thumbnailUrl"));
+    image.setAttribute("alt", searchForKey(data, "headline"));
+    var article = document.createElement('p');
+    article.classList.add("title");
+    var articleLink = document.createElement('a');
+    articleLink.setAttribute("href", getUrl(data));
+    articleLink.textContent = searchForKey(data, "headline");
+    var organization = document.createElement('p');
+    organization.classList.add("organization");
+    organization.textContent = getOrganization(data);
+    var rating = document.createElement('div');
+    rating.classList.add("rating");
+    var ratingNum = document.createElement('span');
+    var recipeTime = document.createElement('time');
+    recipeTime.textContent = convertTime(searchForKey(data, "totalTime"));
+    var ingredients = document.createElement('p');
+    ingredients.classList.add("ingredients");
+    ingredients.textContent = createIngredientList(searchForKey(data, "recipeIngredient"));
+
+    var ratingValue = searchForKey(data, "ratingValue");
+    if (ratingValue == null) {
+      ratingNum.textContent = "No Reviews";
+      rating.appendChild(ratingNum);
+    }
+    else {
+      var ratingImg = document.createElement('img');
+      var ratingReviews = document.createElement('span');
+      ratingNum.textContent = ratingValue;
+      var roundedRating = Math.round(ratingValue);
+      ratingImg.setAttribute("src", "assets/images/icons/" + roundedRating + "-star.svg");
+      ratingImg.setAttribute("alt", roundedRating + " stars");
+      ratingReviews.textContent = "(" + searchForKey(data, "ratingCount") + ")";
+      rating.appendChild(ratingNum); 
+      rating.appendChild(ratingImg);
+      rating.appendChild(ratingReviews);
+    }
+
+    card.appendChild(image);
+    card.appendChild(article);
+    article.appendChild(articleLink);
+    card.appendChild(organization);
+    card.appendChild(rating);
+    card.appendChild(recipeTime);
+    card.appendChild(ingredients);
+  
     // Some functions that will be helpful here:
     //    document.createElement()
     //    document.querySelector()
